@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Reconciliation Log | BuildPayX</title>
+  <link rel="icon" href="{{ url_for('static', filename='assets/favicon.ico') }}">
+  <link rel="preconnect" href="https://fonts.gstatic.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/bootstrap.css') }}"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='assets/vendors/bootstrap-icons/bootstrap-icons.css') }}"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/app.css') }}"/>
+  <style>
+    body { background: #f7f9fa; }
+    .recon-card { border-radius: 15px; box-shadow: 0 2px 18px #0001; border: none; }
+    .card-header { background: #fff; border-bottom: 2px solid #e0e5fa; }
+    .table thead { background: #374785; color: #fff; font-size: 1.07rem; }
+    .badge-status-yes { background: #28a745; }
+    .badge-status-pending { background: #ffc107; color: #212529; }
+    .badge-status-no { background: #dc3545; }
+    .sidebar-menu .sidebar-item.active > .sidebar-link { background: #eaf0fa; color: #374785; }
+    .icon-recon { color: #374785; font-size: 1.35rem;}
+  </style>
+</head>
+<body>
+<div id="app">
+  <!-- Sidebar -->
+  <div id="sidebar" class="active">
+    <div class="sidebar-wrapper active">>
+        <div class="sidebar-header">
+          <div class="d-flex justify-content-between">
+            <div class="logo">
+              <a href="#"><img style="width: 200px; height: 70px;" src="{{ url_for('static', filename='assets/images/logo/logo.png') }}" alt="Logo" /></a>
+            </div>
+            <div class="toggler">
+              <a href="#" class="sidebar-hide d-xl-none d-block"><i class="bi bi-x bi-middle"></i></a>
+            </div>
+          </div>
+        </div>
+        <div class="sidebar-menu">
+          <ul class="menu">
+            <li class="sidebar-title">Menu</li>
+
+            <li class="sidebar-item">
+              <a href="{{ url_for('cfo_landing') }}" class="sidebar-link">
+                <i class="bi bi-grid-fill"></i>
+                <span>Dashboard</span>
+              </a>
+            </li>
+
+            <li class="sidebar-title">Pages</li>
+
+            <li class="sidebar-item">
+              <a href="{{ url_for('cfo_users') }}" class="sidebar-link">
+                <i class="bi bi-person-circle"></i>
+                <span>Requesters</span>
+              </a>
+            </li>
+
+            <li class="sidebar-item">
+              <a href="{{ url_for('cfonotifications') }}" class="sidebar-link">
+                <i class="bi bi-chat-right-text-fill"></i>
+                <span>Notifications</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+        <button class="sidebar-toggler btn x"><i data-feather="x"></i></button>
+      </div>
+    </div>
+    </div>
+  </div>
+
+  <div id="main">
+    <div class="container-fluid mt-4 ps-3 pe-3">
+      <div class="row">
+        <div class="col-12 col-lg-10 col-xl-9">
+          <div class="recon-card card">
+            <div class="card-header d-flex align-items-center justify-content-between">
+              <span class="fw-bold fs-5"><i class="bi bi-shuffle icon-recon me-2"></i>Reconciliation Log</span>
+              <a href="{{ url_for('cfo_landing') }}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left"></i> Dashboard</a>
+            </div>
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table table-bordered table-hover align-middle mb-0">
+                  <thead>
+                    <tr>
+                      <th>PO Number</th>
+                      <th>Paid Date</th>
+                      <th>Requester</th>
+                      <th>Amount</th>
+                      <th>Synced with MYOB</th>
+                      <th>Notes</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for row in sync_data %}
+                    <tr>
+                      <td><b>{{ row.po_number }}</b></td>
+                      <td>{{ row.paid_date }}</td>
+                      <td>{{ row.requester }}</td>
+                      <td><span style="white-space:nowrap;">${{ '%.2f'|format(row.amount) }}</span></td>
+                      <td>
+                        {% if row.synced == "Yes" %}
+                          <span class="badge badge-status-yes">Yes</span>
+                        {% elif row.synced == "Pending" %}
+                          <span class="badge badge-status-pending">Pending</span>
+                        {% else %}
+                          <span class="badge badge-status-no">No</span>
+                        {% endif %}
+                      </td>
+                      <td>{{ row.notes or '-' }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                      <td colspan="6" class="text-center text-muted">No paid POs to reconcile yet.</td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <div class="mt-4 text-end">
+            <a href="{{ url_for('cfo_landing') }}" class="btn btn-secondary">
+              <i class="bi bi-arrow-left"></i> Back to Dashboard
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="{{ url_for('static', filename='assets/js/bootstrap.bundle.min.js') }}"></script>
+</body>
+</html>

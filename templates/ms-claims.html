@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BuildPayX</title>
+  <link rel="icon" href="{{ url_for('static', filename='assets/favicon.ico') }}">
+  <link rel="preconnect" href="https://fonts.gstatic.com" />
+
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/bootstrap.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='assets/vendors/bootstrap-icons/bootstrap-icons.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/app.css') }}">
+  <style>
+    body { background: #f7f9fa; }
+    .dashboard-card { border-radius: 12px; box-shadow: 0 2px 10px #0002; }
+    .badge-status-green     { background: #28a745 !important; color: #fff !important; }
+    .badge-status-blue      { background: #0d6efd !important; color: #fff !important; }
+    .badge-status-grey      { background: #6c757d !important; color: #fff !important; }
+    .badge-status-red       { background: #dc3545 !important; color: #fff !important; }
+    .badge-status-warning   { background: #ffc107 !important; color: #212529 !important; }
+    .badge-status-other     { background: #adb5bd !important; }
+  </style>
+</head>
+<body>
+<div id="app">
+  <div id="sidebar" class="active">
+      <div class="sidebar-wrapper active">
+        <div class="sidebar-header">
+          <div class="d-flex justify-content-between">
+            <div class="logo">
+              <a href="#"><img style="width: 200px;height: 70px;" src="{{ url_for('static', filename='assets/images/logo/logo.png') }}" alt="Logo"></a>
+            </div>
+            <div class="toggler">
+              <a href="#" class="sidebar-hide d-xl-none d-block"><i class="bi bi-x bi-middle"></i></a>
+            </div>
+          </div>
+        </div>
+        <div class="sidebar-menu">
+          <ul class="menu">
+            <li class="sidebar-title">Menu</li>
+
+            <li class="sidebar-item">
+              <a href="{{ url_for('dashboard') }}" class='sidebar-link'>
+                <i class="bi bi-grid-fill"></i>
+                <span>Dashboard</span>
+              </a>
+            </li>
+
+            <li class="sidebar-title">Pages</li>
+
+            <li class="sidebar-item has-sub">
+              <a href="#" class='sidebar-link'>
+                <i class="bi bi-clipboard-check"></i>
+                <span>Manage Claims</span>
+              </a>
+              <ul class="submenu">
+                <li class="submenu-item">
+                  <a href="{{ url_for('submit_claim') }}">Submit new claim</a>
+                </li>
+                <li class="submenu-item active">
+                  <a href="{{ url_for('claim_status') }}">Claim Status</a>
+                </li>
+              </ul>
+            </li>
+
+            <li class="sidebar-item">
+              <a href="{{ url_for('msnotifications') }}" class='sidebar-link'>
+                <i class="bi bi-chat-right-text-fill"></i>
+                <span>Notifications</span>
+              </a>
+            </li>
+
+            <li class="sidebar-item">
+              <a href="{{ url_for('profile') }}" class='sidebar-link'>
+                <i class="bi bi-person-circle"></i>
+                <span>Profile Settings</span>
+              </a>
+            </li>
+            <li class="sidebar-item">
+              <a href="{{ url_for('contact') }}" class='sidebar-link'>
+                <i class="bi bi-chat-right-text-fill"></i>
+                <span>Contact us</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+        <button class="sidebar-toggler btn x"><i data-feather="x"></i></button>
+      </div>
+    </div>
+
+  -- Main Content Area -->
+  <div id="main">
+    <header class="mb-3">
+      <a href="#" class="burger-btn d-block d-xl-none"><i class="bi bi-justify fs-3"></i></a>
+    </header>
+    <div class="page-heading">
+      <div class="d-flex align-items-center mb-2">
+        <i class="bi bi-file-earmark-ruled"></i>
+        <h3 class="mb-0 fw-bold">Claim Status</h3>
+      </div>
+      <p class="text-subtitle text-muted">Check status for all your claims</p>
+    </div>
+    <section class="section">
+      <div class="dashboard-card card">
+        <div class="card-header d-flex align-items-center">
+          <i class="bi bi-clipboard-check me-2"></i>
+          <h5 class="mb-0">Your Claims</h5>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-bordered table-hover align-middle" id="table1">
+              <thead>
+                <tr>
+                  <th>Claim ID</th>
+                  <th>Project</th>
+                  <th>Amount (A$)</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="claims-table-body">
+                <!-- JS will inject rows -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<script src="{{ url_for('static', filename='assets/vendors/perfect-scrollbar/perfect-scrollbar.min.js') }}"></script>
+<script src="{{ url_for('static', filename='assets/js/bootstrap.bundle.min.js') }}"></script>
+<script src="{{ url_for('static', filename='assets/vendors/simple-datatables/simple-datatables.js') }}"></script>
+<script>
+let table1 = document.querySelector('#table1');
+let dataTable = new simpleDatatables.DataTable(table1);
+
+function labelAndClass(status) {
+  // Lowercase for matching
+  if (!status) return { cls: "badge badge-status-other", text: "N/A" };
+  let s = status.toLowerCase().trim();
+  // Ordered for most common first
+  if (s === "paid")  return { cls: "badge badge-status-green",  text: "Paid" };
+  if (s === "fully-approved") return { cls: "badge badge-status-green", text: "Fully Approved" };
+  if (s === "auto-approved") return { cls: "badge badge-status-blue", text: "Auto Approved" };
+  if (s === "awaiting-review") return { cls: "badge badge-status-grey", text: "Awaiting Review" };
+  if (s === "rejected" || s.includes("rejected")) return { cls: "badge badge-status-red", text: "Rejected" };
+  // Fallbacks for incomplete or unexpected statuses
+  return { cls: "badge badge-status-other", text: status.charAt(0).toUpperCase() + status.slice(1) };
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  fetch("/api/claims", { credentials: "include" })
+    .then(res => res.json())
+    .then(data => {
+      const tbody = document.getElementById("claims-table-body");
+      tbody.innerHTML = "";
+      // Defensive fallback for errors
+      if (!Array.isArray(data)) {
+        tbody.innerHTML = '<tr><td colspan="4" class="text-center text-danger">No valid claims returned</td></tr>';
+        return;
+      }
+      if (data.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" class="text-center">No claims found</td></tr>';
+        return;
+      }
+      data.forEach(claim => {
+        const { cls, text } = labelAndClass(claim.status);
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>CLM-${String(claim.id).padStart(3, '0')}</td>
+          <td>${claim.project || 'N/A'}</td>
+          <td>${Number(claim.amount || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
+          <td><span class="${cls}">${text}</span></td>
+        `;
+        tbody.appendChild(row);
+      });
+    })
+    .catch(err => {
+      console.error("Error fetching claims:", err);
+      document.getElementById("claims-table-body").innerHTML = `
+        <tr><td colspan="4" class="text-center text-danger">Failed to load claims</td></tr>
+      `;
+    });
+});
+</script>
+<script src="{{ url_for('static', filename='assets/js/main.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BuildPayX</title>
+  <link rel="icon" href="{{ url_for('static', filename='assets/favicon.ico') }}">
+  <link rel="preconnect" href="https://fonts.gstatic.com" />
+
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/bootstrap.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='assets/vendors/bootstrap-icons/bootstrap-icons.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/app.css') }}" />
+  <link rel="shortcut icon" href="{{ url_for('static', filename='assets/images/favicon.svg') }}" type="image/x-icon" />
+
+  <style>
+    .dropzone {
+      border: 2px dashed #6c757d;
+      border-radius: 10px;
+      padding: 30px;
+      text-align: center;
+      background-color: #f8f9fa;
+      transition: border 0.3s ease;
+      cursor: pointer;
+    }
+    .dropzone.dragover {
+      border-color: #007bff;
+      background-color: #e2e6ea;
+    }
+    .sidebar-item.has-sub .submenu {
+  display: none;
+    }
+    .sidebar-item.has-sub.active .submenu {
+      display: block;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <!-- Sidebar -->
+    <div id="sidebar" class="active">
+      <div class="sidebar-wrapper active">
+        <div class="sidebar-header">
+          <div class="d-flex justify-content-between">
+            <div class="logo">
+              <a href="#"><img style="width: 200px;height: 70px;" src="{{ url_for('static', filename='assets/images/logo/logo.png') }}" alt="Logo"></a>
+            </div>
+            <div class="toggler">
+              <a href="#" class="sidebar-hide d-xl-none d-block"><i class="bi bi-x bi-middle"></i></a>
+            </div>
+          </div>
+        </div>
+        <div class="sidebar-menu">
+          <ul class="menu">
+            <li class="sidebar-title">Menu</li>
+
+            <li class="sidebar-item">
+              <a href="{{ url_for('dashboard') }}" class='sidebar-link'>
+                <i class="bi bi-grid-fill"></i>
+                <span>Dashboard</span>
+              </a>
+            </li>
+
+            <li class="sidebar-title">Pages</li>
+
+           <li class="sidebar-item has-sub">
+              <a href="#" class="sidebar-link">
+                <i class="bi bi-clipboard-check"></i>
+                <span>Manage Claims</span>
+              </a>
+              <ul class="submenu">
+                <li class="submenu-item active">
+                  <a href="{{ url_for('submit_claim') }}">Submit new claim</a>
+                </li>
+                <li class="submenu-item">
+                  <a href="{{ url_for('claim_status') }}">Claim Status</a>
+                </li>
+              </ul>
+            </li>
+
+            <li class="sidebar-item">
+              <a href="{{ url_for('msnotifications') }}" class='sidebar-link'>
+                <i class="bi bi-chat-right-text-fill"></i>
+                <span>Notifications</span>
+              </a>
+            </li>
+
+            <li class="sidebar-item">
+              <a href="{{ url_for('profile') }}" class='sidebar-link'>
+                <i class="bi bi-person-circle"></i>
+                <span>Profile Settings</span>
+              </a>
+            </li>
+            <li class="sidebar-item">
+              <a href="{{ url_for('contact') }}" class='sidebar-link'>
+                <i class="bi bi-chat-right-text-fill"></i>
+                <span>Contact us</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+        <button class="sidebar-toggler btn x"><i data-feather="x"></i></button>
+      </div>
+    </div>
+    <!-- Main -->
+    <div id="main">
+      <header class="mb-3">
+        <a href="#" class="burger-btn d-block d-xl-none">
+          <i class="bi bi-justify fs-3"></i>
+        </a>
+      </header>
+
+      <div class="page-heading">
+        <h3>Submit New Claim</h3>
+        <p class="text-subtitle text-muted">
+          Upload a CSV file to submit your claim. Make sure it follows the
+          <a href="{{ url_for('static', filename='sample_po_template.csv') }}" class="text-primary" download>expected format</a>.
+        </p>
+      </div>
+
+      <div class="page-content">
+        <div class="row">
+          <div class="col-md-8 offset-md-2">
+            <div class="card">
+              <div class="card-body">
+                <form method="POST" action="{{ url_for('upload_po') }}" enctype="multipart/form-data">
+                  <div id="dropzone" class="dropzone mb-3">
+                    <p class="mb-0"><strong>Drag & drop your CSV file here</strong><br>or click to select</p>
+                    <input type="file" name="po_file" class="form-control mt-3" accept=".csv" required />
+                  </div>
+                  <button type="submit" class="btn btn-primary w-100">Upload Claim</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer class="mt-5 text-center text-muted">
+        &copy; 2025 BuildPayX. All rights reserved.
+      </footer>
+    </div>
+  </div>
+
+  <script>
+    const dropzone = document.getElementById('dropzone');
+    dropzone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropzone.classList.add('dragover');
+    });
+    dropzone.addEventListener('dragleave', () => {
+      dropzone.classList.remove('dragover');
+    });
+    dropzone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropzone.classList.remove('dragover');
+      const input = dropzone.querySelector('input[type="file"]');
+      input.files = e.dataTransfer.files;
+    });
+    dropzone.addEventListener('click', () => {
+      dropzone.querySelector('input[type="file"]').click();
+    });
+    document.addEventListener("DOMContentLoaded", function() {
+  document.querySelectorAll('.sidebar-item.has-sub > .sidebar-link').forEach(function(link) {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      const parent = link.parentElement;
+      parent.classList.toggle('active');
+      // Optionally close others for accordion:
+      document.querySelectorAll('.sidebar-item.has-sub').forEach(function(otherItem) {
+        if (otherItem !== parent) otherItem.classList.remove('active');
+      });
+    });
+  });
+});
+  </script>
+
+  <script src="{{ url_for('static', filename='assets/js/bootstrap.bundle.min.js') }}"></script>
+</body>
+</html>

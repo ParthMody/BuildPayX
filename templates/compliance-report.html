@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Compliance Dashboard | BuildPayX</title>
+  <link rel="icon" href="{{ url_for('static', filename='assets/favicon.ico') }}">
+  <link rel="preconnect" href="https://fonts.gstatic.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/bootstrap.css') }}"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='assets/vendors/bootstrap-icons/bootstrap-icons.css') }}"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/app.css') }}"/>
+  <style>
+    body { background: #f7f9fa; }
+    .compliance-card { border-radius: 15px; box-shadow: 0 2px 18px rgba(51, 161, 246, 0.7); border: none; }
+    .card-header { background: #374785; border-bottom: 2px solid #e0e5fa; }
+    .table thead { background: #374785; color: #fff; font-size: 1.06rem; }
+    .badge { font-size: 0.98em; }
+    .page-heading h2, .page-heading h3 { color: #374785; }
+    .sidebar-menu .sidebar-item.active > .sidebar-link { background: #eaf0fa; color: #374785; }
+    .icon-compliance { color: #374785; font-size: 1.4rem;}
+  </style>
+</head>
+<body>
+<div id="app">
+  <div id="sidebar" class="active">
+    <div class="sidebar-wrapper active">>
+        <div class="sidebar-header">
+          <div class="d-flex justify-content-between">
+            <div class="logo">
+              <a href="#"><img style="width: 200px; height: 70px;" src="{{ url_for('static', filename='assets/images/logo/logo.png') }}" alt="Logo" /></a>
+            </div>
+            <div class="toggler">
+              <a href="#" class="sidebar-hide d-xl-none d-block"><i class="bi bi-x bi-middle"></i></a>
+            </div>
+          </div>
+        </div>
+        <div class="sidebar-menu">
+          <ul class="menu">
+            <li class="sidebar-title">Menu</li>
+
+            <li class="sidebar-item">
+              <a href="{{ url_for('cfo_landing') }}" class="sidebar-link">
+                <i class="bi bi-grid-fill"></i>
+                <span>Dashboard</span>
+              </a>
+            </li>
+
+            <li class="sidebar-title">Pages</li>
+
+            <li class="sidebar-item">
+              <a href="{{ url_for('cfo_users') }}" class="sidebar-link">
+                <i class="bi bi-person-circle"></i>
+                <span>Requesters</span>
+              </a>
+            </li>
+
+            <li class="sidebar-item">
+              <a href="{{ url_for('cfonotifications') }}" class="sidebar-link">
+                <i class="bi bi-chat-right-text-fill"></i>
+                <span>Notifications</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+        <button class="sidebar-toggler btn x"><i data-feather="x"></i></button>
+      </div>
+    </div>
+    </div>
+  </div>
+  <div id="main">
+    <div class="page-heading">
+      <div class="d-flex align-items-center mb-2">
+        <i class="bi bi-shield-check icon-compliance me-2"></i>
+        <span class="fw-bold fs-5">Compliance Dashboard</span>
+      </div>
+      <p class="text-muted">Role-based compliance &amp; status reporting</p>
+    </div>
+    <div class="container-fluid mt-4 ps-3 pe-3">
+      <div class="row">
+        <div class="col-12 col-lg-10 col-xl-9">
+          <div class="compliance-card card mb-3">
+            <div class="card-body">
+              {% if roles|length > 1 %}
+              <form method="POST" class="row align-items-center mb-3 g-2">
+                <div class="col-auto">
+                  <label for="role_select" class="form-label mb-0 pe-2 fw-bold">View as:</label>
+                </div>
+                <div class="col-auto">
+                  <select name="role_select" id="role_select" class="form-select" style="min-width: 200px;">
+                    {% for role_id, label in roles.items() %}
+                      <option value="{{ role_id }}" {% if report_role == role_id %}selected{% endif %}>
+                        {{ label }}
+                      </option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="col-auto">
+                  <button type="submit" class="btn btn-primary">Generate</button>
+                </div>
+              </form>
+              {% endif %}
+              {% if report_role == "cfo" %}
+                <h5 class="mb-3"><i class="bi bi-credit-card-2-back text-success me-1"></i> CFO: Paid POs</h5>
+                <table class="table table-striped table-hover table-bordered mb-0">
+                  <thead class="table-dark"><tr>
+                    <th>PO Number</th><th>Amount</th><th>Status</th><th>Requester</th><th>Paid Date</th>
+                  </tr></thead>
+                  <tbody>
+                  {% for row in table_data %}
+                  <tr>
+                    <td>{{ row['po_number'] }}</td>
+                    <td>${{ '%.2f' | format(row['amount']) }}</td>
+                    <td><span class="badge bg-success">{{ row['status']|replace('-', ' ')|capitalize }}</span></td>
+                    <td>{{ row['requester'] }}</td>
+                    <td>{{ row['paid_date'] or "N/A" }}</td>
+                  </tr>
+                  {% else %}
+                    <tr><td colspan="5" class="text-center text-muted">No paid POs found.</td></tr>
+                  {% endfor %}
+                  </tbody>
+                </table>
+              {% elif report_role == "pm" %}
+                <h5 class="mb-3"><i class="bi bi-exclamation-triangle text-warning me-1"></i> PMO: Outstanding or Rejected POs</h5>
+                <table class="table table-striped table-hover table-bordered mb-0">
+                  <thead class="table-dark"><tr>
+                    <th>PO Number</th><th>Amount</th><th>Status</th><th>Requester</th><th>Date</th>
+                  </tr></thead>
+                  <tbody>
+                  {% for row in table_data %}
+                  <tr>
+                    <td>{{ row['po_number'] }}</td>
+                    <td>${{ '%.2f' | format(row['amount']) }}</td>
+                    <td>
+                      <span class="badge 
+                        {% if "reject" in row['status'] %}bg-danger
+                        {% else %}bg-warning text-dark{% endif %}
+                      ">{{ row['status']|replace('-', ' ')|capitalize }}</span>
+                    </td>
+                    <td>{{ row['requester'] }}</td>
+                    <td>{{ row['created_date'] or "N/A" }}</td>
+                  </tr>
+                  {% else %}
+                    <tr><td colspan="5" class="text-center text-muted">No items to show.</td></tr>
+                  {% endfor %}
+                  </tbody>
+                </table>
+              {% elif report_role == "head_contractor" %}
+                <h5 class="mb-3"><i class="bi bi-diagram-3 text-info me-1"></i> Head Contractor: Subcontractor Scorecard</h5>
+                <table class="table table-striped table-hover table-bordered mb-0">
+                  <thead class="table-dark"><tr>
+                    <th>Subcontractor</th><th>Total POs</th><th>Paid</th>
+                  </tr></thead>
+                  <tbody>
+                  {% for row in table_data %}
+                    <tr>
+                      <td>{{ row['username'] }}</td>
+                      <td>{{ row['total_pos'] }}</td>
+                      <td>{{ row['paid_pos'] }}</td>
+                    </tr>
+                  {% else %}
+                    <tr><td colspan="3" class="text-center text-muted">No items to show.</td></tr>
+                  {% endfor %}
+                  </tbody>
+                </table>
+              {% elif report_role == "subcontractor" %}
+                <h5 class="mb-3"><i class="bi bi-person-lines-fill text-primary me-1"></i> Subcontractor: PO Tracker</h5>
+                <table class="table table-striped table-hover table-bordered mb-0">
+                  <thead class="table-dark"><tr>
+                    <th>PO Number</th><th>Amount</th><th>Status</th><th>Date</th>
+                  </tr></thead>
+                  <tbody>
+                  {% for row in table_data %}
+                  <tr>
+                    <td>{{ row['po_number'] }}</td>
+                    <td>${{ '%.2f' | format(row['amount']) }}</td>
+                    <td>
+                      <span class="badge 
+                        {% if "paid" in row['status'] %}bg-success
+                        {% elif "approve" in row['status'] %}bg-primary
+                        {% elif "reject" in row['status'] %}bg-danger
+                        {% else %}bg-warning text-dark{% endif %}
+                      ">{{ row['status']|replace('-', ' ')|capitalize }}</span>
+                    </td>
+                    <td>{{ row['created_date'] or "N/A" }}</td>
+                  </tr>
+                  {% else %}
+                    <tr><td colspan="4" class="text-center text-muted">No items to show.</td></tr>
+                  {% endfor %}
+                  </tbody>
+                </table>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="{{ url_for('static', filename='assets/js/bootstrap.bundle.min.js') }}"></script>
+</body>
+</html>

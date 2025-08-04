@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Your Purchase Orders</h2>
+<form method="post" action="{{ url_for('upload_po') }}" enctype="multipart/form-data">
+    <label>Upload CSV: <input type="file" name="po_file" required></label>
+    <button type="submit">Upload</button>
+</form>
+<ul>
+    {% for po in pos %}
+    <li>
+        <a href="{{ url_for('po_detail', po_id=po.id) }}">{{ po.po_number }}</a>
+        — {{ po.description }} ({{ po.status }}, {{ po.scenario_tag }})
+    </li>
+    {% endfor %}
+</ul>
+{% endblock %}

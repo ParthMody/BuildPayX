@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BuildPayX</title>
+  <link rel="icon" href="{{ url_for('static', filename='assets/favicon.ico') }}">
+  <link rel="preconnect" href="https://fonts.gstatic.com" />
+  
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/bootstrap.css') }}"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='assets/vendors/bootstrap-icons/bootstrap-icons.css') }}"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/app.css') }}"/>
+  <style>
+    body { background: #f7f9fa; }
+    .detail-card { border-radius: 12px; box-shadow: 0 2px 10px #0001; }
+    .badge-scenario-red { background: #dc3545; color: #fff; }
+    .badge-scenario-yellow { background: #ffc107; color: #212529; }
+    .badge-scenario-green { background: #28a745; color: #fff; }
+    .badge-status { background: #6c757d; color: #fff; font-size: 0.9em; }
+    .ledger-table th, .ledger-table td { vertical-align: middle !important; }
+  </style>
+</head>
+<body>
+<div id="app">
+  <!-- Sidebar -->
+  <div id="sidebar" class="active">
+    <div class="sidebar-wrapper active">
+      <div class="sidebar-header d-flex justify-content-between">
+        <div class="logo">
+          <a href="{{ url_for('pm_landing') }}">
+            <img src="{{ url_for('static', filename='assets/images/logo/logo.png') }}" alt="Logo" style="width:200px; height:70px;">
+          </a>
+        </div>
+        <div class="toggler">
+          <a href="#" class="sidebar-hide d-xl-none d-block"><i class="bi bi-x bi-middle"></i></a>
+        </div>
+      </div>
+      <div class="sidebar-menu">
+        <ul class="menu">
+          <li class="sidebar-title">Menu</li>
+          <li class="sidebar-item">
+            <a href="{{ url_for('pm_landing') }}" class="sidebar-link">
+              <i class="bi bi-grid-fill"></i>
+              <span>Dashboard</span>
+            </a>
+          </li>
+          <li class="sidebar-title">Pages</li>
+          <li class="sidebar-item">
+            <a href="{{ url_for('pmo_users') }}" class="sidebar-link">
+              <i class="bi bi-bookmark-fill"></i>
+              <span>Requesters</span>
+            </a>
+          </li>
+          <li class="sidebar-item">
+            <a href="{{ url_for('notifications') }}" class="sidebar-link">
+              <i class="bi bi-chat-right-text-fill"></i>
+              <span>Notifications</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+      <button class="sidebar-toggler btn x"><i data-feather="x"></i></button>
+    </div>
+  </div>
+  
+  <div id="main">
+    <header class="mb-3">
+      <a href="#" class="burger-btn d-block d-xl-none"><i class="bi bi-justify fs-3"></i></a>
+    </header>
+
+    <div class="page-heading">
+      <div class="d-flex align-items-center mb-2">
+        <i class="bi bi-file-earmark-text" style="font-size: 1.6rem; color: #374785; margin-right: 0.5rem;"></i>
+        <h3 class="mb-0 fw-bold" style="color: #374785;">PO Details</h3>
+      </div>
+    </div>
+
+    <div class="container mt-4">
+      <div class="row">
+        <div class="col-lg-7 mb-4">
+          <div class="detail-card card">
+            <div class="card-header bg-white">
+              <h5 class="mb-0">Summary</h5>
+            </div>
+            <div class="card-body">
+              <ul class="list-group list-group-flush">
+                <li class="list-group-item"><strong>PO #:</strong> {{ po.po_number }}</li>
+                <li class="list-group-item"><strong>Supplier:</strong> {{ po.supplier or "N/A" }}</li>
+                <li class="list-group-item"><strong>Description:</strong> {{ po.description or "N/A" }}</li>
+                <li class="list-group-item"><strong>Advance:</strong> {{ po.advance_pct or "N/A" }}</li>
+                <li class="list-group-item"><strong>Delivery Days:</strong> {{ po.delivery_days or "N/A" }}</li>
+                <li class="list-group-item"><strong>Insurance:</strong> {{ po.insurance_status or "N/A" }}</li>
+                <li class="list-group-item">
+                  <strong>Status:</strong>
+                  <span class="badge badge-status">
+                    {% if po.status == "approved" %}PM Approved
+                    {% elif po.status == "rejected" %}PM Rejected
+                    {% elif po.status == "fully-approved" %}Fully Approved
+                    {% elif po.status == "cfo-rejected" %}Rejected by CFO
+                    {% elif po.status == "auto-approved" %}Auto Approved
+                    {% elif po.status == "awaiting-review" %}Awaiting Review
+                    {% else %}{{ po.status|capitalize }}
+                    {% endif %}
+                  </span>
+                </li>
+                <li class="list-group-item">
+                  <strong>Scenario:</strong>
+                  {% if po.scenario_tag.lower() == "red" %}
+                    <span class="badge badge-scenario-red text-uppercase">Red</span>
+                  {% elif po.scenario_tag.lower() == "yellow" %}
+                    <span class="badge badge-scenario-yellow text-uppercase">Yellow</span>
+                  {% elif po.scenario_tag.lower() == "green" %}
+                    <span class="badge badge-scenario-green text-uppercase">Green</span>
+                  {% else %}
+                    <span class="badge bg-secondary text-uppercase">Unknown</span>
+                  {% endif %}
+                </li>
+                <li class="list-group-item"><strong>Requested by:</strong> {{ uploader or "N/A" }}</li>
+                <li class="list-group-item"><strong>Amount:</strong> ${{ '%.2f'|format(po.amount|float) }} AUD</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-5 mb-4">
+          <div class="detail-card card">
+            <div class="card-header bg-white">
+              <h5 class="mb-0">Ledger</h5>
+            </div>
+            <div class="card-body">
+              {% if ledger %}
+                <div class="table-responsive">
+                  <table class="table table-sm ledger-table">
+                    <thead>
+                      <tr>
+                        <th>Timestamp</th>
+                        <th>User</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for entry in ledger %}
+                        <tr>
+                          <td>{{ entry.timestamp }}</td>
+                          <td>{{ entry.performed_by }}</td>
+                          <td>{{ entry.action }} {% if entry.remarks %}- {{ entry.remarks }}{% endif %}</td>
+                        </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+              {% else %}
+                <p class="text-muted">No ledger entries available.</p>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {# ===== ACTION FORMS (Approve/Reject) LOGIC ===== #}
+      {% set final_statuses = ['approved', 'fully-approved', 'rejected', 'cfo-rejected', 'auto-approved', 'paid'] %}
+      {% set tag = po.scenario_tag.lower() %}
+      {% set status = po.status.lower() %}
+
+      {% if status not in final_statuses %}
+        {% if tag == 'red' or tag == 'yellow' %}
+          <div class="text-center mb-3">
+            <button class="btn btn-success btn-action me-3" onclick="showForm('approve')">PM Approve</button>
+            <button class="btn btn-danger btn-action" onclick="showForm('reject')">PM Reject</button>
+          </div>
+          <form method="POST" action="{{ url_for('pmo_approve', po_id=po.id) }}" id="approveForm" class="comment-box" style="display:none;">
+            <input type="text" name="reason" class="form-control mb-2" placeholder="Enter reason for PM approval..." required>
+            <button type="submit" class="btn btn-success">Confirm PM Approval</button>
+          </form>
+          <form method="POST" action="{{ url_for('pmo_reject', po_id=po.id) }}" id="rejectForm" class="comment-box" style="display:none;">
+            <input type="text" name="reason" class="form-control mb-2" placeholder="Enter reason for PM rejection..." required>
+            <button type="submit" class="btn btn-danger">Confirm PM Rejection</button>
+          </form>
+        {% elif tag == 'green' %}
+          <div class="alert alert-success text-center mb-3">
+            <i class="bi bi-check-circle"></i>
+            This PO was auto-approved.
+          </div>
+        {% endif %}
+      {% endif %}
+
+      <div class="mt-4 text-center">
+        <a href="{{ url_for('pmo_user_uploads', user_id=po.requester_id) }}" class="btn btn-secondary">&larr; Back to User's POs</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function showForm(action) {
+    document.getElementById('approveForm').style.display = (action === 'approve') ? 'block' : 'none';
+    document.getElementById('rejectForm').style.display = (action === 'reject') ? 'block' : 'none';
+  }
+</script>
+<script src="{{ url_for('static', filename='assets/js/bootstrap.bundle.min.js') }}"></script>
+</body>
+  </footer>
+</html>

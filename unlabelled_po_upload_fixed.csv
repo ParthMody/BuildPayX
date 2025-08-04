@@ -1,0 +1,11 @@
+po_number,supplier,description,advance_pct,delivery_days,insurance_status,amount,claim_count
+PO0017,CoreCivils,Pile drilling stalled,90,5,expired,54000,2
+PO0018,BrickBay Ltd,Shortfall in bricks,80,4,valid,29000,1
+PO0019,PrimeSteel Ltd,Redundant steel delivery,85,3,expired,63000,2
+PO0020,QuickMix,Concrete mix hold,70,6,expired,32000,1
+PO0021,NorthFix,Window fittings stuck,88,2,expired,41000,3
+PO0022,BlueBuild Ltd,Paint refund issue,65,4,valid,15000,1
+PO0023,SharpCore,Machinery error,90,3,expired,78000,2
+PO0024,InfraBuild,Bridge slab delay,60,7,expired,67000,1
+PO0025,CementCrafters,Over-delivery claim,87,4,expired,25000,2
+PO0026,TimberOne,Wood moisture defect,75,3,expired,19000,1

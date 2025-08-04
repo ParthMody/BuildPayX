@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>CFO Notifications | BuildPayX</title>
+  <link rel="icon" href="{{ url_for('static', filename='assets/favicon.ico') }}">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/bootstrap.css') }}"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='assets/vendors/bootstrap-icons/bootstrap-icons.css') }}"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/app.css') }}"/>
+  <style>
+    body { background: #f6fafd;}
+    .notif-card { border-radius: 14px; box-shadow: 0 2px 20px #0001; }
+    .notif-header { background: #374785; color: #fff; border-radius: 14px 14px 0 0; }
+    .notif-icon { font-size: 1.7rem; color: #dce1ea; }
+    .notif-important {
+      border-left: 6px solid #dc3545;
+      background: #fff3f3;
+    }
+    .notif-info {
+      border-left: 5px solid #3bc9db;
+      background: #f6fcff;
+    }
+    .list-group-item { border: none; background: none; }
+  </style>
+</head>
+<body>
+<div id="app">
+  <!-- Sidebar -->
+  <div id="sidebar" class="active">
+    <div class="sidebar-wrapper active">
+      <div class="sidebar-header">
+        <div class="d-flex justify-content-between">
+          <div class="logo">
+            <a href="#"><img style="width: 200px; height: 70px;" src="{{ url_for('static', filename='assets/images/logo/logo.png') }}" alt="Logo" /></a>
+          </div>
+          <div class="toggler">
+            <a href="#" class="sidebar-hide d-xl-none d-block"><i class="bi bi-x bi-middle"></i></a>
+          </div>
+        </div>
+      </div>
+      <div class="sidebar-menu">
+        <ul class="menu">
+          <li class="sidebar-title">Menu</li>
+          <li class="sidebar-item">
+            <a href="{{ url_for('cfo_landing') }}" class="sidebar-link">
+              <i class="bi bi-grid-fill"></i>
+              <span>Dashboard</span>
+            </a>
+          </li>
+          <li class="sidebar-title">Pages</li>
+          <li class="sidebar-item">
+            <a href="{{ url_for('cfo_users') }}" class="sidebar-link">
+              <i class="bi bi-person-circle"></i>
+              <span>Requesters</span>
+            </a>
+          </li>
+          <li class="sidebar-item active">
+            <a href="{{ url_for('cfonotifications') }}" class="sidebar-link">
+              <i class="bi bi-chat-right-text-fill"></i>
+              <span>Notifications</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+      <button class="sidebar-toggler btn x"><i data-feather="x"></i></button>
+    </div>
+  </div>
+  <!-- MAIN CONTENT -->
+  <div id="main">
+    <div class="container mt-4">
+      <div class="notif-card card shadow-sm">
+        <div class="notif-header card-header d-flex align-items-center justify-content-between">
+          <div>
+            <i class="bi bi-bell-fill notif-icon me-2"></i>
+            <span class="fw-bold fs-5">CFO Notification Center</span>
+          </div>
+          <span class="text-muted small d-none d-md-inline">
+            <i class="bi bi-clock me-1"></i> Updated {{ now or "Today" }}
+          </span>
+        </div>
+        <div class="card-body">
+
+          <!-- Critical Alerts -->
+          <div class="d-flex align-items-center p-3 mb-3 notif-important" style="font-weight:500;">
+            <i class="bi bi-exclamation-triangle-fill me-3 fs-4 text-danger"></i>
+            <div>
+              <b>Critical:</b> Bank sync scheduled for <u>6pm Friday</u>.
+              <span class="fw-normal">No batch payments 5–7pm.</span>
+            </div>
+          </div>
+
+          <!-- Action Needed & Reminders -->
+          <div class="row g-3 mb-4">
+            <div class="col-md-6">
+              <div class="p-3 rounded bg-light border lh-sm d-flex align-items-center gap-2">
+                <i class="bi bi-currency-dollar fs-4 text-primary"></i>
+                <div>
+                  <b>3 POs awaiting batch payment</b>
+                  <div class="text-muted fw-normal small">Last checked: {{ now or "today" }}</div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="p-3 rounded bg-light border lh-sm d-flex align-items-center gap-2">
+                <i class="bi bi-person-gear fs-5 text-info"></i>
+                Trusted partner <b>Xpress Audits</b> posted a new <span class="d-inline-block">KYC certificate</span> for review.
+              </div>
+            </div>
+          </div>
+
+          <!-- Info/Timeline -->
+          <div class="mb-4">
+            <div class="p-3 rounded bg-white border d-flex align-items-center gap-2 notif-info mb-2">
+              <i class="bi bi-envelope-paper-fill text-success"></i>
+              Supplier <b>IronBuild Pty</b> <span class="fw-normal">confirmed payment remittance received 2 days ago.</span>
+            </div>
+          </div>
+
+          <!-- Earlier -->
+          <hr>
+          <p class="mb-2 text-primary fw-semibold d-flex align-items-center">
+            <i class="bi bi-clock-history me-2"></i> Earlier Records
+          </p>
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+              <i class="bi bi-check-circle-fill text-success me-2"></i>
+              <b>Reconciliation complete:</b> Batch payment on <b>2024-06-22</b>
+            </li>
+            <li class="list-group-item">
+              <i class="bi bi-download text-primary me-2"></i>
+              New <b>compliance report</b> ready for download
+            </li>
+            <li class="list-group-item">
+              <i class="bi bi-exclamation-square-fill text-warning me-2"></i>
+              PO <b>#PO1155</b> flagged for multi-sign error. <span class="fw-normal">Review ledger.</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="mt-4 text-end">
+        <a href="{{ url_for('cfo_landing') }}" class="btn btn-secondary btn-sm">
+          <i class="bi bi-arrow-left"></i> Back to Dashboard
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="{{ url_for('static', filename='assets/js/bootstrap.bundle.min.js') }}"></script>
+</body>
+</html>

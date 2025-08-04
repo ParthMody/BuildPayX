@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BuildPayX</title>
+  <link rel="icon" href="{{ url_for('static', filename='assets/favicon.ico') }}">
+  <link rel="preconnect" href="https://fonts.gstatic.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/bootstrap.css') }}"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='assets/vendors/bootstrap-icons/bootstrap-icons.css') }}"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/app.css') }}"/>
+  <style>
+    body { background: #f7f9fa; }
+    .dashboard-card { border-radius: 12px; box-shadow: 0 2px 10px #0001; }
+    .sidebar-menu .sidebar-item.active > .sidebar-link { background: #eaf0fa; color: #374785; }
+    .stat-card { display: flex; align-items: center; gap: 1rem; background: #fff; border-radius: 10px; box-shadow: 0 1px 4px #0001; padding: 1.1rem 1.6rem; }
+    .stat-card i { font-size: 1.7rem; }
+    .quick-action-icon { font-size: 1.4rem; }
+    .summary-card ul { list-style: none; padding: 0; margin: 0; }
+    .summary-card li { display: flex; align-items: center; margin-bottom: 0.3rem; }
+    .summary-card i { min-width: 20px; }
+    .dashboard-charts { display: flex; flex-wrap: wrap; gap: 2rem;}
+    .dashboard-charts .card { flex: 1 1 380px; min-width: 340px;}
+  </style>
+</head>
+<body>
+<div id="app">
+  <!-- Sidebar (unchanged) -->
+  <div id="sidebar" class="active">
+    <div class="sidebar-wrapper active">>
+        <div class="sidebar-header">
+          <div class="d-flex justify-content-between">
+            <div class="logo">
+              <a href="#"><img style="width: 200px; height: 70px;" src="{{ url_for('static', filename='assets/images/logo/logo.png') }}" alt="Logo" /></a>
+            </div>
+            <div class="toggler">
+              <a href="#" class="sidebar-hide d-xl-none d-block"><i class="bi bi-x bi-middle"></i></a>
+            </div>
+          </div>
+        </div>
+        <div class="sidebar-menu">
+          <ul class="menu">
+            <li class="sidebar-title">Menu</li>
+
+            <li class="sidebar-item active">
+              <a href="{{ url_for('pm_landing') }}" class="sidebar-link">
+                <i class="bi bi-grid-fill"></i>
+                <span>Dashboard</span>
+              </a>
+            </li>
+
+            <li class="sidebar-title">Pages</li>
+
+            <li class="sidebar-item">
+              <a href="{{ url_for('cfo_users') }}" class="sidebar-link">
+                <i class="bi bi-person-circle"></i>
+                <span>Requesters</span>
+              </a>
+            </li>
+
+            <li class="sidebar-item">
+              <a href="{{ url_for('cfonotifications') }}" class="sidebar-link">
+                <i class="bi bi-chat-right-text-fill"></i>
+                <span>Notifications</span>
+              </a>
+            </li>
+
+            <!-- <li class="sidebar-item">
+              <a href="{{ url_for('profile') }}" class="sidebar-link">
+                <i class="bi bi-person-circle"></i>
+                <span>Profile Settings</span>
+              </a>
+            </li> -->
+
+            <li class="sidebar-item mt-4 pt-2 border-top">
+              <a href="{{ url_for('logout') }}" class="sidebar-link">
+                <i class="bi bi-box-arrow-right text-danger"></i>
+                <span class="text-danger">Logout</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+        <button class="sidebar-toggler btn x"><i data-feather="x"></i></button>
+      </div>
+    </div>
+    </div>
+  </div>
+  <div id="main">
+    <header class="mb-3">
+      <a href="#" class="burger-btn d-block d-xl-none"><i class="bi bi-justify fs-3"></i></a>
+    </header>
+    <div class="page-heading">
+      <div class="d-flex align-items-center mb-2">
+        <i class="bi bi-bank" style="font-size: 1.7rem; color: #374785; margin-right: 0.5rem;"></i>
+        <h2 class="mb-0 fw-bold" style="color: #374785;">CFO Dashboard</h2>
+      </div>
+      <p class="text-muted">Finance summary, actions & compliance at-a-glance.</p>
+    </div>
+    <div class="container mt-4">
+      <!-- Quick stats row (unchanged) -->
+      <div class="row mb-4 g-3">
+        <div class="col-md-4">
+          <div class="stat-card">
+            <i class="bi bi-receipt-cutoff text-success"></i>
+            <span>
+              <span class="fw-semibold fs-5">{{ stats.paid or 0 }}</span><br/>
+              <span class="text-muted small">POs Paid</span>
+            </span>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="stat-card">
+            <i class="bi bi-hourglass-split text-warning"></i>
+            <span>
+              <span class="fw-semibold fs-5">{{ stats.pending or 0 }}</span><br/>
+              <span class="text-muted small">Pending Payment</span>
+            </span>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="stat-card">
+            <i class="bi bi-shield-check text-primary"></i>
+            <span>
+              <span class="fw-semibold fs-5">{{ stats.compliant or 0 }}</span><br/>
+              <span class="text-muted small">Fully Compliant</span>
+            </span>
+          </div>
+        </div>
+      </div>
+      <!-- Quick actions (unchanged) -->
+     <div class="dashboard-card card mb-3">
+      <div class="card-header bg-white">
+        <h5 class="mb-0">Quick Actions</h5>
+      </div>
+      <div class="card-body d-flex flex-wrap gap-3">
+        <a href="{{ url_for('cfo_batch_payments') }}" class="btn btn-outline-primary flex-fill d-flex align-items-center justify-content-center py-3">
+          <i class="bi bi-credit-card me-2" style="font-size:1.25rem;"></i>
+          <span>Batch Payment</span>
+        </a>
+        <a href="{{ url_for('cfo_reconciliation') }}" class="btn btn-outline-secondary flex-fill d-flex align-items-center justify-content-center py-3">
+          <i class="bi bi-shuffle me-2" style="font-size:1.25rem;"></i>
+          <span>Reconciliation</span>
+        </a>
+        <a href="{{ url_for('compliance_report') }}" class="btn btn-outline-success flex-fill d-flex align-items-center justify-content-center py-3">
+          <i class="bi bi-shield-check me-2" style="font-size:1.25rem;"></i>
+          <span>Compliance Report</span>
+        </a>
+      </div>
+    </div>
+      <!-- Executive summary card (unchanged) -->
+    <div class="dashboard-card card mb-4 summary-card">
+      <div class="card-header bg-white d-flex align-items-center">
+        <i class="bi bi-journal-check text-primary me-2" style="font-size: 1.4rem;"></i>
+        <h5 class="mb-0">Monthly Finance Summary — July 2025</h5>
+      </div>
+      <div class="card-body">
+        <ul class="list-unstyled ms-2" style="margin-top: 0.5rem;">
+        <li class="mb-3 d-flex align-items-center" style="min-height: 2.2rem;">
+          <i class="bi bi-check2-circle text-success me-2"></i>
+          <strong>All payments up to&nbsp;<u>29th July&nbsp;</u>have been successfully processed.</strong>
+        </li>
+        <li class="mb-3 d-flex align-items-center" style="min-height: 2.2rem;">
+          <i class="bi bi-credit-card-2-back text-info me-2"></i>
+          Batch disbursements completed for&nbsp;<strong>CementWorks</strong>,&nbsp;<strong>IronBuild</strong>,and&nbsp;<strong>PlumbX Pty</strong>.
+        </li>
+        <li class="mb-3 d-flex align-items-center" style="min-height: 2.2rem;">
+          <i class="bi bi-calendar-event text-info me-2"></i>
+          Retention releases worth&nbsp;<strong>$38,500</strong>&nbsp;are scheduled for&nbsp;<strong>August</strong>.
+        </li>
+        <li class="mb-3 d-flex align-items-center" style="min-height: 2.2rem;">
+          <i class="bi bi-bar-chart-fill text-secondary me-2"></i>
+          <strong> Compliance rate for July:</strong>&nbsp;<span class="text-primary" style="letter-spacing: 0.5px;"> 98%</span><small class="text-muted">(highest this year)</small>
+        </li>
+        </ul>
+          <div class="small text-muted mt-3">
+            <i class="bi bi-calendar-check me-1"></i> Last updated: 01 Aug 2025
+          </div>
+        </div>
+      </div>
+      <!-- Finance Analytics/Charts row -->
+    <div class="dashboard-charts mb-4 justify-content-center align-items-start" style="display: flex;">
+      <!-- Cashflow chart -->
+      <div class="dashboard-card card p-3 d-flex flex-column align-items-center" style="margin-bottom: 1.2rem; height: 320px;">
+        <h6 class="fw-bold mb-3 text-center"><i class="bi bi-bar-chart-fill me-1 text-primary"></i> Cashflow Forecast (Next 6 Months)</h6>
+        <canvas id="cashflowChart" height="190"></canvas>
+      </div>
+      <!-- Top 5 Suppliers by Spend -->
+      <div class="dashboard-card card p-3 d-flex flex-column align-items-center" style="max-width: 700px; margin-bottom: 1.2rem;">
+        <h6 class="fw-bold mb-3 text-center"><i class="bi bi-bar-chart-steps me-1 text-warning"></i> Top 5 Suppliers by Spend (FY2025)</h6>
+        <canvas id="supplierBarChart" height="170"></canvas>
+      </div>
+        <!-- PO status chart -->
+        <div class="dashboard-card card p-3">
+          <h6 class="fw-bold mb-3"><i class="bi bi-pie-chart-fill me-1 text-success"></i> PO Status Breakdown</h6>
+          <canvas id="poStatusChart" height="190"></canvas>
+        </div>
+      </div>
+      <!-- (Optional: More chart/widgets here on CEO request) -->
+    </div>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{{ url_for('static', filename='assets/js/bootstrap.bundle.min.js') }}"></script>
+<script>
+// ======= Charts Configuration =========
+
+// Static data for demo; replace with live data as needed
+const cashflowLabels = ["Aug", "Sep", "Oct", "Nov", "Dec", "Jan"];
+const cashflowData = [68000, 84250, 95000, 72000, 87000, 81000];
+
+const poStatusData = [44, 7, 2]; // Paid, Pending, Overdue static demo numbers
+
+// Cashflow (bar) chart
+new Chart(document.getElementById('cashflowChart').getContext('2d'), {
+  type: 'bar',
+  data: {
+    labels: cashflowLabels,
+    datasets: [{
+      label: "Projected Outflows (A$)", backgroundColor: "#3778c2ee",
+      data: cashflowData,
+      borderRadius: 8,
+      maxBarThickness: 36
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { display:false }},
+    scales: {
+      y: { beginAtZero: true, ticks: { stepSize: 25000 }, grid: { color: '#ededed'} },
+      x: { grid: { color: '#f7f7f7'} }
+    }
+  }
+});
+
+// PO Status (pie) chart
+new Chart(document.getElementById('poStatusChart').getContext('2d'), {
+  type: 'pie',
+  data: {
+    labels: ["Paid", "Pending", "Overdue"],
+    datasets: [{
+      data: poStatusData,
+      backgroundColor: ["#28a745ee", "#ffc107ee", "#dc3545cc"]
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { position: 'bottom' }
+    }
+  }
+});
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Cashflow Chart (existing - unchanged)
+new Chart(document.getElementById('cashflowChart').getContext('2d'), {
+  type: 'bar',
+  data: {
+    labels: ["Aug", "Sep", "Oct", "Nov", "Dec", "Jan"],
+    datasets: [{
+      label: "Projected Outflows (A$)", backgroundColor: "#3778c2ee",
+      data: [68000, 84250, 95000, 72000, 87000, 81000],
+      borderRadius: 8,
+      maxBarThickness: 36
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { display:false }},
+    scales: { y: { beginAtZero: true }, x: {} }
+  }
+});
+
+// PO Status (existing - unchanged)
+new Chart(document.getElementById('poStatusChart').getContext('2d'), {
+  type: 'pie',
+  data: {
+    labels: ["Paid", "Pending", "Overdue"],
+    datasets: [{
+      data: [44, 7, 2],
+      backgroundColor: ["#28a745ee", "#ffc107ee", "#dc3545cc"]
+    }]
+  },
+  options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+});
+
+// NEW: Top 5 Suppliers by Spend (static values, update as desired)
+const supplierLabels = ["CementWorks", "IronBuild", "PlumbX Pty", "FastAggregate", "EcoSteel"];
+const supplierSpend = [95000, 86000, 71000, 47000, 33000];
+
+new Chart(document.getElementById('supplierBarChart').getContext('2d'), {
+  type: 'bar',
+  data: {
+    labels: supplierLabels,
+    datasets: [{
+      label: 'Spend this year (A$k)',
+      data: supplierSpend.map(x => x/1000), // For 'k' display
+      backgroundColor: "#374785bb",
+      borderRadius: 10
+    }]
+  },
+  options: {
+    indexAxis: 'y',
+    responsive: true,
+    plugins: {
+      legend: { display: false }
+    },
+    scales: {
+      x: {
+        beginAtZero: true,
+        ticks: { stepSize: 10, callback: v => v + "k" },
+        grid: { color: '#ebebeb' }
+      },
+      y: { grid: { color: "#f7f7f7" } }
+    }
+  }
+});
+</script>
+
+</body>
+<footer class="text-center py-3 bg-white border-top mt-5" style="font-size: 0.97rem; color: #6c757d;">
+    © 2025 BuildPayX
+    <!-- other links... -->
+  </footer>
+</html>

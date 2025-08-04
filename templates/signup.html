@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BuildPayX</title>
+  <link rel="icon" href="{{ url_for('static', filename='assets/favicon.ico') }}">
+  <link rel="preconnect" href="https://fonts.gstatic.com" />
+
+  <!-- Google Font + Bootstrap + Icons + App CSS -->
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/bootstrap.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='assets/vendors/bootstrap-icons/bootstrap-icons.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/app.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/pages/auth.css') }}" />
+
+  <!-- Custom animation CSS -->
+  <style>
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .fade-text {
+      animation: fadeIn 3s ease-in-out forwards;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="auth">
+    <div class="row h-100 m-0">
+      <!-- Left Side: Signup Form -->
+      <div class="col-lg-5 col-12 d-flex align-items-center">
+        <div id="auth-left" class="w-100 px-4">
+          <div class="auth-logo mb-3">
+            <a href="#">
+              <img src="{{ url_for('static', filename='assets/images/logo/logo.png') }}"
+                   alt="Logo"
+                   style="max-width: 180px;" />
+            </a>
+          </div>
+          <h1 class="auth-title">Sign Up</h1>
+          <p class="auth-subtitle mb-4">Input your data to register to our platform.</p>
+
+          <form action="{{ url_for('signup') }}" method="POST">
+            <div class="form-group position-relative has-icon-left mb-4">
+              <input type="text" name="username" class="form-control form-control-xl" placeholder="Username" required />
+              <div class="form-control-icon"><i class="bi bi-person"></i></div>
+            </div>
+
+            <div class="form-group position-relative has-icon-left mb-4">
+              <input type="password" id="password" name="password" class="form-control form-control-xl" placeholder="Password" required />
+              <div class="form-control-icon"><i class="bi bi-shield-lock"></i></div>
+              <div class="position-absolute top-50 end-0 translate-middle-y me-3">
+                <i class="bi bi-eye toggle-password" id="togglePassword" style="font-size: 1.2rem;"></i>
+              </div>
+            </div>
+
+            <div class="form-group position-relative has-icon-left mb-4">
+              <input type="password" id="password" name="password" class="form-control form-control-xl" placeholder="Confirm Password" required />
+              <div class="form-control-icon"><i class="bi bi-shield-lock"></i></div>
+              <div class="position-absolute top-50 end-0 translate-middle-y me-3">
+                <i class="bi bi-eye toggle-password" id="togglePassword" style="font-size: 1.2rem;"></i>
+              </div>
+            </div>
+
+            <div class="form-group position-relative has-icon-left mb-4">
+              <select class="form-control form-control-xl" name="role" required>
+                <option value="" disabled selected>Select Your Role</option>
+                <option value="requester">Head Contractor</option>
+                <option value="project_accountant">Project Accountant</option>
+                <option value="project_director">Project Director</option>
+                <option value="ext_qs">Superintendent</option>
+                <option value="commercial_manager">Commercial Manager</option>
+                <option value="cfo">CFO</option>
+
+              </select>
+              <div class="form-control-icon"><i class="bi bi-person-badge"></i></div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block btn-lg shadow-lg mt-4">Sign Up</button>
+          </form>
+
+          <div class="text-center mt-4 text-lg fs-6">
+            <p class="text-gray-600">
+              Already have an account?
+              <a href="{{ url_for('login') }}" class="font-bold">Log in</a>.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Side: Background Image + Fade Text -->
+      <div class="col-lg-7 d-none d-lg-block p-0 position-relative">
+        <img
+          src="{{ url_for('static', filename='assets/images/logo/bck.png') }}"
+          alt="Illustration"
+          style="width: 100%; height: 100vh; object-fit: cover;"
+        />
+        <div class="fade-text text-white position-absolute w-100 text-center"
+             style="bottom: 05%; left: 0; font-size: 1.8rem; font-weight: 600;">
+          Build smarter. Get paid faster.
+        </div>
+      </div>
+    </div>
+  </div>
+    <!-- View Password Script -->
+  <script>
+    const togglePassword = document.querySelector('#togglePassword');
+    const password = document.querySelector('#password');
+
+    togglePassword.addEventListener('click', () => {
+      const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+      password.setAttribute('type', type);
+      togglePassword.classList.toggle('bi-eye');
+      togglePassword.classList.toggle('bi-eye-slash');
+    });
+  </script>
+</body>
+</html>

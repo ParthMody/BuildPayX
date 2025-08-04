@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PO Details | BuildPayX – CFO</title>
+  <link rel="icon" href="{{ url_for('static', filename='assets/favicon.ico') }}">
+  <link rel="preconnect" href="https://fonts.gstatic.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/bootstrap.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='assets/vendors/bootstrap-icons/bootstrap-icons.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/app.css') }}">
+  <style>
+    body { background: #f7f9fa; }
+    .detail-card { border-radius: 14px; box-shadow: 0 2px 14px #0001; }
+    .badge-scenario-red    { background: #dc3545; color: #fff; }
+    .badge-scenario-yellow { background: #ffc107; color: #212529; }
+    .badge-scenario-green  { background: #28a745; color: #fff; }
+    .badge-status          { background: #6c757d !important; color: #fff; font-size: 0.9em; }
+    .sidebar-menu .sidebar-item.active > .sidebar-link { background: #eaf0fa; color: #374785; }
+    .card-title { font-size: 1.19rem; }
+    .comment-box { display: none; margin-top: 15px; }
+    .btn-action { min-width: 110px; }
+  </style>
+</head>
+<body>
+<div id="app">
+  <!-- Sidebar (unchanged) -->
+  <div id="sidebar" class="active">
+    <div class="sidebar-wrapper active">>
+        <div class="sidebar-header">
+          <div class="d-flex justify-content-between">
+            <div class="logo">
+              <a href="#"><img style="width: 200px; height: 70px;" src="{{ url_for('static', filename='assets/images/logo/logo.png') }}" alt="Logo" /></a>
+            </div>
+            <div class="toggler">
+              <a href="#" class="sidebar-hide d-xl-none d-block"><i class="bi bi-x bi-middle"></i></a>
+            </div>
+          </div>
+        </div>
+        <div class="sidebar-menu">
+          <ul class="menu">
+            <li class="sidebar-title">Menu</li>
+
+            <li class="sidebar-item">
+              <a href="{{ url_for('pm_landing') }}" class="sidebar-link">
+                <i class="bi bi-grid-fill"></i>
+                <span>Dashboard</span>
+              </a>
+            </li>
+
+            <li class="sidebar-title">Pages</li>
+
+            <li class="sidebar-item">
+              <a href="{{ url_for('cfo_users') }}" class="sidebar-link">
+                <i class="bi bi-person-circle"></i>
+                <span>Requesters</span>
+              </a>
+            </li>
+
+            <li class="sidebar-item">
+              <a href="{{ url_for('cfonotifications') }}" class="sidebar-link">
+                <i class="bi bi-chat-right-text-fill"></i>
+                <span>Notifications</span>
+              </a>
+            </li>
+
+            <!-- <li class="sidebar-item">
+              <a href="{{ url_for('profile') }}" class="sidebar-link">
+                <i class="bi bi-person-circle"></i>
+                <span>Profile Settings</span>
+              </a>
+            </li> -->
+          </ul>
+        </div>
+        <button class="sidebar-toggler btn x"><i data-feather="x"></i></button>
+      </div>
+    </div>
+    </div>
+  </div>
+
+    <div class="page-heading mb-3">
+      <div class="d-flex align-items-center mb-2">
+        <i class="bi bi-file-earmark-text" style="font-size: 1.4rem; color: #374785; margin-right: 0.6rem;"></i>
+        <h3 class="mb-0 fw-bold" style="color: #374785;">PO Details</h3>
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="row g-4">
+        <!-- Details Card -->
+        <div class="col-lg-6">
+          <div class="detail-card card mb-3">
+            <div class="card-header bg-white pb-1">
+              <h5 class="card-title fw-bold">{{ po.po_number or "Untitled PO" }} &mdash; {{ po.company_name or "Company Unknown" }}</h5>
+              <div class="small text-muted">{{ uploader or "Uploader Unknown" }}</div>
+            </div>
+            <div class="card-body pb-0">
+              <ul class="list-group list-group-flush">
+                <li class="list-group-item"><strong>Description:</strong> {{ po.description or "N/A" }}</li>
+                <li class="list-group-item"><strong>Advance:</strong> {{ po.advance_pct or "N/A" }}</li>
+                <li class="list-group-item"><strong>Delivery Days:</strong> {{ po.delivery_days or "N/A" }}</li>
+                <li class="list-group-item"><strong>Insurance:</strong> {{ po.insurance_status or "N/A" }}</li>
+                <li class="list-group-item"><strong>Amount:</strong> ${{ "{:,.2f}".format(po.amount|float) }} AUD</li>
+                <li class="list-group-item">
+                  <strong>Status:</strong>
+                  <span class="badge badge-status">
+                    {% if po.status == "approved" %} PM Approved
+                    {% elif po.status == "rejected" %} PM Rejected
+                    {% elif po.status == "fully-approved" %} Fully Approved
+                    {% elif po.status == "cfo-rejected" %} Rejected by CFO
+                    {% elif po.status == "auto-approved" %} Auto Approved
+                    {% elif po.status == "awaiting-review" %} Awaiting Review
+                    {% else %} {{ po.status|capitalize }}
+                    {% endif %}
+                  </span>
+                </li>
+                <li class="list-group-item">
+                  <strong>Scenario:</strong>
+                  {% if po.scenario_tag.lower() == "red" %}
+                    <span class="badge badge-scenario-red text-uppercase">Red</span>
+                  {% elif po.scenario_tag.lower() == "yellow" %}
+                    <span class="badge badge-scenario-yellow text-uppercase">Yellow</span>
+                  {% elif po.scenario_tag.lower() == "green" %}
+                    <span class="badge badge-scenario-green text-uppercase">Green</span>
+                  {% else %}
+                    <span class="badge bg-secondary text-uppercase">Unknown</span>
+                  {% endif %}
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <!-- Ledger Card -->
+        <div class="col-lg-6">
+          <div class="detail-card card mb-3">
+            <div class="card-header bg-white pb-1">
+              <h5 class="card-title fw-bold"><i class="bi bi-clock-history"></i> Ledger</h5>
+            </div>
+            <div class="card-body pb-0">
+              <div class="table-responsive">
+                <table class="table table-sm mb-0">
+                  <thead>
+                    <tr>
+                      <th>Timestamp</th>
+                      <th>User</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for entry in ledger %}
+                      <tr>
+                        <td>{{ entry.timestamp }}</td>
+                        <td>{{ entry.performed_by }}</td>
+                        <td>{{ entry.action }} {% if entry.remarks %}- {{ entry.remarks }}{% endif %}</td>
+                      </tr>
+                    {% else %}
+                      <tr>
+                        <td colspan="3" class="text-muted text-center">No ledger entries</td>
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {# ---- CFO Action Panel ---- #}
+      {% set final_statuses = ['approved', 'fully-approved', 'rejected', 'cfo-rejected', 'auto-approved', 'paid'] %}
+      {% set tag = po.scenario_tag.lower() %}
+      {% set status = po.status.lower() %}
+      <div class="row">
+        <div class="col-lg-12">
+          {% if status not in final_statuses %}
+            {% if tag == 'red' %}
+              <div class="text-center mb-3">
+                <button class="btn btn-success btn-action me-3" onclick="showForm('approve')">CFO Approve</button>
+                <button class="btn btn-danger btn-action" onclick="showForm('reject')">CFO Reject</button>
+              </div>
+              <form method="POST" action="{{ url_for('cfo_approve', po_id=po.id) }}" id="approveForm" class="comment-box">
+                <input type="text" name="reason" class="form-control mb-2" placeholder="Enter reason for CFO approval..." required>
+                <button type="submit" class="btn btn-success">Confirm CFO Approval</button>
+              </form>
+              <form method="POST" action="{{ url_for('cfo_reject', po_id=po.id) }}" id="rejectForm" class="comment-box">
+                <input type="text" name="reason" class="form-control mb-2" placeholder="Enter reason for CFO rejection..." required>
+                <button type="submit" class="btn btn-danger">Confirm CFO Rejection</button>
+              </form>
+            {% elif tag == 'yellow' %}
+              <div class="alert alert-warning text-center mb-3">
+                <i class="bi bi-exclamation-circle"></i>
+                PMO approval required before CFO action.
+              </div>
+            {% elif tag == 'green' %}
+              <div class="alert alert-success text-center mb-3">
+                <i class="bi bi-check-circle"></i>
+                This PO was auto-approved.
+              </div>
+            {% endif %}
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="mt-4 text-center">
+        <a href="{{ url_for('cfo_user_uploads', user_id=po.requester_id) }}" class="btn btn-secondary">
+          &larr; Back to User Uploads
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function showForm(action) {
+    document.getElementById('approveForm').style.display = (action === 'approve') ? 'block' : 'none';
+    document.getElementById('rejectForm').style.display = (action === 'reject') ? 'block' : 'none';
+  }
+</script>
+<script src="{{ url_for('static', filename='assets/js/bootstrap.bundle.min.js') }}"></script>
+</body>
+</html>

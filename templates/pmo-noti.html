@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>BuildPayX</title>
+  <link rel="icon" href="{{ url_for('static', filename='assets/favicon.ico') }}">
+  <link rel="preconnect" href="https://fonts.gstatic.com" />
+
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/bootstrap.css') }}"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='assets/vendors/bootstrap-icons/bootstrap-icons.css') }}"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/app.css') }}"/>
+  <style>
+    body { background: #f7f9fa;}
+    .notif-card { border-radius: 12px; box-shadow: 0 2px 12px #0002;}
+    .notif-header { background: #446edb; color: #fff; border-radius: 12px 12px 0 0; }
+    .notif-pm-action { border-left: 5px solid #ffc107; background: #fffbe6; }
+    .notif-pm-info { border-left: 5px solid #5bc0eb; background: #f3f9fd; }
+    .pm-icon { font-size: 1.6rem; color: #446edb;}
+  </style>
+</head>
+<body>
+<div id="app">
+  <div id="sidebar" class="active">
+    <div class="sidebar-wrapper active">
+      <div class="sidebar-header d-flex justify-content-between">
+        <div class="logo">
+          <a href="{{ url_for('pm_landing') }}">
+            <img src="{{ url_for('static', filename='assets/images/logo/logo.png') }}" alt="Logo" style="width:200px; height:70px;">
+          </a>
+        </div>
+        <div class="toggler">
+          <a href="#" class="sidebar-hide d-xl-none d-block"><i class="bi bi-x bi-middle"></i></a>
+        </div>
+      </div>
+      <div class="sidebar-menu">
+          <ul class="menu">
+            <li class="sidebar-title">Menu</li>
+
+            <li class="sidebar-item">
+              <a href="{{ url_for('pm_landing') }}" class='sidebar-link'>
+                <i class="bi bi-grid-fill"></i>
+                <span>Dashboard</span>
+              </a>
+            </li>
+            <li class="sidebar-title">Pages</li>
+             <li class="sidebar-item">
+              <a href="{{ url_for('pmo_users') }}" class='sidebar-link'>
+                <i class="bi bi-person-circle"></i>
+                <span>Requesters</span>
+              </a>
+            </li>
+            <li class="sidebar-item active">
+              <a href="{{ url_for('notifications') }}" class='sidebar-link'>
+                <i class="bi bi-chat-right-text-fill"></i>
+                <span>Notifications</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+        <button class="sidebar-toggler btn x"><i data-feather="x"></i></button>
+      </div>
+    </div>
+  <div id="main">
+    <div class="container mt-4">
+      <div class="notif-card card">
+        <div class="notif-header card-header d-flex align-items-center">
+          <i class="bi bi-bell pm-icon me-2"></i>
+          <h4 class="mb-0">PMO Notification Center</h4>
+        </div>
+        <div class="card-body">
+          <div class="mb-3 notif-pm-action p-3 rounded">
+            <i class="bi bi-hourglass-split text-warning me-2"></i>
+            <strong>2 POs require your approval</strong> (latest from <b>{{ now or "today" }}</b>). Act promptly to avoid delays!
+          </div>
+          <div class="mb-3 notif-pm-info p-3 rounded">
+            <i class="bi bi-exclamation-octagon text-danger me-2"></i>
+            <b>PO003</b> flagged as RED (risk: compliance, urgent review needed).
+          </div>
+          <div class="mb-3 notif-pm-info p-3 rounded">
+            <i class="bi bi-file-earmark-plus-fill text-info me-2"></i>
+            New PO <b>PO025</b> uploaded by <b>EastSub Construction</b>.
+          </div>
+          <div class="mb-3 notif-pm-info p-3 rounded">
+            <i class="bi bi-envelope-check text-success me-2"></i>
+            Supplier <b>CementWorks</b> has submitted missing insurance documents.
+          </div>
+          <hr/>
+          <div class="mb-2 text-muted small"><i class="bi bi-clock-history"></i> Earlier</div>
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+              <i class="bi bi-flag-fill text-danger me-2"></i>
+              Yellow PO <b>PO007</b> was rejected. Sub notified.
+            </li>
+            <li class="list-group-item">
+              <i class="bi bi-megaphone text-primary me-2"></i>
+              Maintenance scheduled tomorrow 7–9am.
+            </li>
+            <li class="list-group-item">
+              <i class="bi bi-file-earmark-check text-success me-2"></i>
+              Your last compliance report was generated successfully.
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="mt-4 text-end">
+        <a href="{{ url_for('pm_landing') }}" class="btn btn-secondary btn-sm">&larr; Back to Dashboard</a>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="{{ url_for('static', filename='assets/js/bootstrap.bundle.min.js') }}"></script>
+</body>
+</html>

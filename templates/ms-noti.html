@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BuildPayX</title>
+  <link rel="icon" href="{{ url_for('static', filename='assets/favicon.ico') }}">
+  <link rel="preconnect" href="https://fonts.gstatic.com" />
+
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/bootstrap.css') }}"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='assets/vendors/bootstrap-icons/bootstrap-icons.css') }}"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/app.css') }}"/>
+</head>
+
+<body>
+  <div id="app">
+    <!-- Sidebar -->
+    <div id="sidebar" class="active">
+      <div class="sidebar-wrapper active">
+        <div class="sidebar-header">
+          <div class="d-flex justify-content-between">
+            <div class="logo">
+              <a href="#"><img style="width: 200px;height: 70px;" src="{{ url_for('static', filename='assets/images/logo/logo.png') }}" alt="Logo"></a>
+            </div>
+            <div class="toggler">
+              <a href="#" class="sidebar-hide d-xl-none d-block"><i class="bi bi-x bi-middle"></i></a>
+            </div>
+          </div>
+        </div>
+        <div class="sidebar-menu">
+          <ul class="menu">
+            <li class="sidebar-title">Menu</li>
+
+            <li class="sidebar-item">
+              <a href="{{ url_for('dashboard') }}" class='sidebar-link'>
+                <i class="bi bi-grid-fill"></i>
+                <span>Dashboard</span>
+              </a>
+            </li>
+
+            <li class="sidebar-title">Pages</li>
+
+            <li class="sidebar-item has-sub">
+              <a href="#" class='sidebar-link'>
+                <i class="bi bi-clipboard-check"></i>
+                <span>Manage Claims</span>
+              </a>
+              <ul class="submenu">
+                <li class="submenu-item">
+                  <a href="{{ url_for('submit_claim') }}">Submit new claim</a>
+                </li>
+                <li class="submenu-item">
+                  <a href="{{ url_for('claim_status') }}">Claim Status</a>
+                </li>
+              </ul>
+            </li>
+
+            <li class="sidebar-item active">
+              <a href="{{ url_for('msnotifications') }}" class='sidebar-link'>
+                <i class="bi bi-chat-right-text-fill"></i>
+                <span>Notifications</span>
+              </a>
+            </li>
+
+            <li class="sidebar-item">
+              <a href="{{ url_for('profile') }}" class='sidebar-link'>
+                <i class="bi bi-person-circle"></i>
+                <span>Profile Settings</span>
+              </a>
+            </li>
+            <li class="sidebar-item">
+              <a href="{{ url_for('contact') }}" class='sidebar-link'>
+                <i class="bi bi-chat-right-text-fill"></i>
+                <span>Contact us</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+        <button class="sidebar-toggler btn x"><i data-feather="x"></i></button>
+      </div>
+    </div>
+
+    <!-- Main content -->
+    <div id="main">
+      <header class="mb-3">
+        <a href="#" class="burger-btn d-block d-xl-none">
+          <i class="bi bi-justify fs-3"></i>
+        </a>
+      </header>
+
+      <div class="page-heading">
+        <h3>Notifications</h3>
+      </div>
+      <div class="page-content">
+        <section class="section">
+          <div class="row">
+            <div class="col-12 col-md-8">
+
+              <!-- High Priority Alerts -->
+              <div class="card mb-4">
+                <div class="card-header">
+                  <h4>Important Alerts</h4>
+                </div>
+                <div class="card-body">
+                  <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="bi bi-exclamation-octagon-fill me-2"></i>
+                    Upcoming maintenance: <strong>BuildPay</strong> platform will be down on 
+                    <time datetime="2025-07-20">July 20, 2025</time>.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                  </div>
+                  <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    <i class="bi bi-clock-history me-2"></i>
+                    Your last claim submission is <strong>Pending</strong> review. 
+                    <a href="#" class="alert-link">View details</a>.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                  </div>
+                  <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="bi bi-patch-check-fill me-2"></i>
+                    Claim <strong>#CLM-1024</strong> has been approved and paid.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                  </div>
+                  <div class="alert alert-info alert-dismissible fade show" role="alert">
+                    <i class="bi bi-envelope-check-fill me-2"></i>
+                    New message from <strong>Accounts Team</strong> regarding your invoice.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Older Notifications -->
+              <div class="card">
+                <div class="card-header">
+                  <h4>Earlier Notifications</h4>
+                </div>
+                <div class="card-body p-0">
+                  <ul class="list-group list-group-flush">
+                    <li class="list-group-item d-flex justify-content-between align-items-start">
+                      <div><i class="bi bi-calendar-check-fill text-success me-2"></i>EarlyPay fee updated to 1.5%</div>
+                      <small class="text-muted">2 days ago</small>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-start">
+                      <div><i class="bi bi-file-earmark-arrow-up-fill text-primary me-2"></i>Purchase Order PO-OTL2023 uploaded</div>
+                      <small class="text-muted">3 days ago</small>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-start">
+                      <div><i class="bi bi-patch-exclamation-fill text-warning me-2"></i>Annual KYC update due</div>
+                      <small class="text-muted">5 days ago</small>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-start">
+                      <div><i class="bi bi-shield-lock-fill text-secondary me-2"></i>Password was changed</div>
+                      <small class="text-muted">1 week ago</small>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <script src="{{ url_for('static', filename='assets/vendors/perfect-scrollbar/perfect-scrollbar.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='assets/js/bootstrap.bundle.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='assets/js/main.js') }}"></script>
+</body>
+</html>
